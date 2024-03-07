@@ -1,0 +1,81 @@
+﻿@page "/personas"
+
+@inject HttpClient http;
+@inject NavigationManager navigation;
+@using BlazorPeople.Models;
+
+@if (cargando)
+{
+    <iframe src="https://giphy.com/embed/hWZBZjMMuMl7sWe0x8" width="1000" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+}
+else{
+    <h3>PersonasList</h3>
+        <style>
+            .nav-link {
+                text-decoration: none;              
+            }
+            .nav-link:hover{
+                background-color: #0056B4;
+                color:white;
+            }
+        </style>
+
+
+    <button class="btn btn-primary p-2 w-10 text-center rounded nav-link" @onclick="Add"><span class="oi oi-plus"></span><strong>Agregar Usuario</strong></button>
+        
+
+        @if (personas != null) { 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tipo Identificacion</th>
+                    <th>Identificacion</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Estado civil</th>
+                    <th>Fecha de nacimiento</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in personas)
+                {
+                    <tr>
+                        <td>@user.TipoIdentificacion</td>
+                        <td>@user.Identificacion</td>
+                        <td>@user.Nombre</td>
+                        <td>@user.Apellido</td>
+                        <td>@user.Estado</td>
+                        <td>@user.FechaNacimiento.ToString("dd/MM/yyy")</td>
+                        <td>@user.Correo</td>
+                        <td>@user.Celular</td>
+                        <td class="w-5"><NavLink class="btn-primary text-center p-2 btn-lg nav-link" href=@($"/personaunica/{user.Id}")><span class="oi oi-eye"></span>Consultar</NavLink></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        }
+}
+
+@code {
+    private Persona[] personas;
+    private bool cargando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cargando = true;
+        await Task.Yield();
+        personas = await http.GetFromJsonAsync<Persona[]>("api/personas");    
+        cargando = false;
+    }
+
+
+    public void Add()
+    {
+        navigation.NavigateTo("/agregar");
+    }
+
+}

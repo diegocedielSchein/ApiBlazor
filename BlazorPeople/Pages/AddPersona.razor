@@ -1,0 +1,117 @@
+﻿@page "/agregar"
+
+@inject HttpClient Http;
+@using BlazorPeople.Models;
+@inject NavigationManager NavigationManager;
+
+<h3>AddPersona</h3>
+
+<style>
+    .ancho{
+        width:500px;
+    }
+</style>
+    <EditForm Model="persona" OnValidSubmit="EnviarPersona">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="form-group">
+            <label>Nombre:</label>
+            <InputText id="Nombre" @bind-Value="persona.Nombre" required class="form-control ancho" />
+            <ValidationMessage For="@(() => persona.Nombre)" />
+        </div>
+
+
+    <div class="form-group">
+            <label>Apellido:</label>
+        <InputText id="Apellido" @bind-Value="persona.Apellido" required class="form-control ancho" />
+            <ValidationMessage For="@(() => persona.Apellido)" />
+        </div>
+
+
+    <div class="form-group">
+            <label>Tipo Identificacion:</label>
+        <InputSelect id="TipoIdentificacion" @bind-Value="persona.TipoIdentificacion" required class="form-control ancho">
+            <option value="">Seleccion el tipo de documento--</option>
+            <option value="CC">Cedula de ciudadania</option>
+            <option value="TI">Tarjeta de identidad</option>
+            <option value="CE">Cedula Extranjera</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => persona.TipoIdentificacion)" />
+        </div>
+
+
+    <div class="form-group">
+            <label>Identificacion:</label>
+        <InputNumber id="Identificacion" @bind-Value="persona.Identificacion" required class="form-control ancho" />
+            <ValidationMessage For="@(() => persona.Identificacion)" />
+        </div>
+
+
+    <div class="form-group">
+            <label>Estado Civil:</label>
+        <InputSelect id="Estado" @bind-Value="persona.Estado" required class="form-control ancho">
+                <option value="">Seleccione su estado civil--</option>
+                <option value="soltero">Soltero</option>
+                <option value="casado">Casado</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => persona.Estado)"/>
+        </div>
+
+
+    <div class="form-group">
+            <label>Fecha de Nacimiento:</label>
+        <InputDate id="FechaNacimiento" @bind-Value="persona.FechaNacimiento" required class="form-control ancho" />
+            <ValidationMessage For="@(() => persona.FechaNacimiento)"/>
+        </div>
+
+
+    <div class="form-group">
+            <label>Celular:</label>
+        <InputNumber id="Celular" @bind-Value="persona.Celular" required min-length="1"  class="form-control ancho" />
+            <ValidationMessage For="@(() => persona.Celular)"/>
+        </div>
+
+
+    <div class="form-group">
+            <label>Correo:</label>
+        <InputText id="Correo" @bind-Value="persona.Correo" required class="form-control ancho" />
+            <ValidationMessage For="@(() => persona.Correo)"/>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary mt-3 p-2"><span class="oi oi-plus"></span>Agregar</button>
+        <button class="btn btn-success mt-3 p-2" @onclick="Volver"><span class="oi oi-chevron-left ml-2"></span>Volver</button>
+
+    </EditForm>
+
+
+@code {
+    public Persona persona = new Persona()
+        {
+            FechaNacimiento = DateTime.Now
+        };
+
+    public bool ShowModal = false;
+
+    public async Task EnviarPersona()
+    {
+
+        await Http.PostAsJsonAsync("api/personas", persona);
+
+        NavigationManager.NavigateTo("/personas");
+        persona = new Persona();
+    }
+
+    public void CloseModal()
+    {
+        ShowModal = false;
+    }
+
+    public void Volver()
+    {
+        NavigationManager.NavigateTo("/personas");    
+    }
+
+
+}

@@ -1,0 +1,120 @@
+﻿@page "/personaunica/{Id:int}"
+
+@inject HttpClient http
+@inject NavigationManager NavigationManager;
+@using BlazorPeople.Models;
+
+<h3>Datos de la Persona</h3>
+
+@if (persona == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            <tr>
+                <th scope="row">Nombre:</th>
+                <td>@persona.Nombre</td>
+            </tr>
+            <tr>
+                <th scope="row">Apellido:</th>
+                <td>@persona.Apellido</td>
+            </tr>
+            <tr>
+                <th scope="row">Tipo Identificación:</th>
+                <td>@persona.TipoIdentificacion</td>
+            </tr>
+
+            <tr>
+                <th scope="row">Numero de identificacion:</th>
+                <td>@persona.Identificacion</td>
+            </tr>
+            <tr>
+                <th scope="row">Estado civil:</th>
+                <td>@persona.Estado</td>
+            </tr>
+            <tr>
+                <th scope="row">Celular</th>
+                <td>@persona.Celular</td>
+            </tr>
+
+            <tr>
+                <th scope="row">Fecha de Nacimiento</th>
+                <td>@persona.FechaNacimiento.ToString("dd/MM/yyy")</td>
+            </tr>
+            <tr>
+                <th scope="row">Correo:</th>
+                <td>@persona.Correo</td>
+            </tr>
+
+        </tbody>
+    </table>
+    <button class="btn btn-danger mb-3" @onclick="()=> ConfirmDeleteUser(persona.Id)"><span class="oi oi-trash"></span>Eliminar</button>
+    <NavLink class="btn btn-warning mb-3" href=@($"/Editar/{persona.Id}")><span class="oi oi-pencil"></span>Editar</NavLink>
+    <button class="btn btn-success mb-3" @onclick="Volver"><span class="oi oi-circle-check"></span>Terminado</button>
+}
+
+@if (ShowDeleteUser)
+{
+    <div class="modal" tabindex="-1" style="display:block">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CancelPersona"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" @onclick="EliminarPersona">Sí</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelPersona">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    public int UserIdDelete;
+    private List<Persona> personas;
+    private bool ShowDeleteUser;
+    private Persona persona;
+
+    protected override async Task OnInitializedAsync()
+    {
+        persona = await http.GetFromJsonAsync<Persona>($"api/personas/{Id}");
+    }
+
+    public void ConfirmDeleteUser(int UserId)
+    {
+        UserIdDelete = UserId;
+        ShowDeleteUser = true;
+    }
+
+    private async Task EliminarPersona()
+    {
+        Id = UserIdDelete;
+        await http.DeleteAsync($"api/personas/{Id}");
+        NavigationManager.NavigateTo("/personas");
+
+    }
+
+
+    public void CancelPersona()
+    {
+        ShowDeleteUser = false;
+    }
+
+    public void Volver()
+    {
+        NavigationManager.NavigateTo("/personas");
+    }
+
+}
