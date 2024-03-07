@@ -5,14 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddDbContext<PersonasContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("myconn")));
-// Add services to the container.
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("MyCorsPolicy",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
-});
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -36,4 +29,4 @@ app.MapControllers();
 
 app.Run();
 
-app.UseCors("MyCorsPolicy");
+
