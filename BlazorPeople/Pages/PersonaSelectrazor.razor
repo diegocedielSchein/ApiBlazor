@@ -1,5 +1,6 @@
 ﻿@page "/personaunica/{Id:int}"
 
+@inject IJSRuntime JSRuntime
 @inject HttpClient http
 @inject NavigationManager NavigationManager;
 @using BlazorPeople.Models;
@@ -53,7 +54,9 @@ else
     </table>
     <button class="btn btn-danger mb-3" @onclick="()=> ConfirmDeleteUser(persona.Id)"><span class="oi oi-trash"></span>Eliminar</button>
     <NavLink class="btn btn-warning mb-3" href=@($"/Editar/{persona.Id}")><span class="oi oi-pencil"></span>Editar</NavLink>
+    <button class="btn btn-secondary mb-3" @onclick="()=> GenerarPdf()"><i class="fa-regular fa-file-pdf" style="color: #ec5b51;"></i>Informe</button>
     <button class="btn btn-success mb-3" @onclick="Volver"><span class="oi oi-circle-check"></span>Terminado</button>
+    
 }
 
 @if (ShowDeleteUser)
@@ -76,7 +79,28 @@ else
         </div>
     </div>
 }
+<script>
+    window.downloadFile = function (data, fileName, contentType) {
+        var blob = new Blob([data], { type: contentType });
 
+        if (window.navigator.msSaveBlob) { 
+            window.navigator.msSaveBlob(blob, fileName);
+        } else {
+            var link = document.createElement("a");
+
+            if (link.download !== undefined) {
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", fileName);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    }
+
+</script>
 @code
 {
     [Parameter]
@@ -98,6 +122,7 @@ else
         ShowDeleteUser = true;
     }
 
+
     private async Task EliminarPersona()
     {
         Id = UserIdDelete;
@@ -115,6 +140,17 @@ else
     public void Volver()
     {
         NavigationManager.NavigateTo("/personas");
+    }
+
+    private async Task GenerarPdf()
+    {
+        var response = await http.GetAsync($"api/pdf/{Id}");
+        response.EnsureSuccessStatusCode();
+
+        var pdfBytes = await response.Content.ReadAsByteArrayAsync();
+
+        // Descargar el PDF
+        await JSRuntime.InvokeVoidAsync("downloadFile", pdfBytes, $"{persona.Nombre}_{persona.Apellido}.pdf", "application/pdf");
     }
 
 }
