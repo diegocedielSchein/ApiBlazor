@@ -30,5 +30,6 @@ namespace PersonasWebApi.Models
 
         [Required]
         public string Correo { get; set; }
+
     }
 }
