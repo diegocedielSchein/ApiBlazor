@@ -1,9 +1,9 @@
-﻿@page "/Editar/{Id:int}"
+﻿@page "/Editar/{IdAttr:int}"
 
 
-@inject HttpClient Http;
+@inject HttpClient HttpSrv;
+@inject NavigationManager NavigationManagerSrv;
 @using BlazorPeople.Models;
-@inject NavigationManager NavigationManager;
 
 <h3>Editar Persona</h3>
 <style>
@@ -92,26 +92,26 @@ else
 }
 @code {
     [Parameter]
-    public int Id { get; set; }
+    public int IdAttr { get; set; }
 
 
     private Persona persona;
 
     protected override async Task OnInitializedAsync()
     {
-        persona = await Http.GetFromJsonAsync<Persona>($"api/personas/{Id}");
+        persona = await HttpSrv.GetFromJsonAsync<Persona>($"api/personas/{IdAttr}");
     }
 
 
     private async Task ActualizarPersona()
     {
 
-        await Http.PutAsJsonAsync($"api/personas/{Id}", persona);
-        NavigationManager.NavigateTo($"/personaunica/{Id}");
+        await HttpSrv.PutAsJsonAsync($"api/personas/{IdAttr}", persona);
+        NavigationManagerSrv.NavigateTo($"/personaunica/{IdAttr}");
     }
 
     public void Volver()
     {
-        NavigationManager.NavigateTo($"/personaunica/{Id}");
+        NavigationManagerSrv.NavigateTo($"/personaunica/{IdAttr}");
     }
 }

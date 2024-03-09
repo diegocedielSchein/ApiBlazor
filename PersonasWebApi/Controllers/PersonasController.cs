@@ -1,9 +1,7 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PersonasWebApi.Data;
 using PersonasWebApi.Models;
-
 
 namespace PersonasWebApi.Controllers
 {
@@ -17,12 +15,14 @@ namespace PersonasWebApi.Controllers
             _context = context;
         }
 
-        // Método para obtener todas las personas
+       
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Persona>>> GetPersonas()
         {
             return await _context.Persona.ToListAsync();
         }
+
+
 
         [HttpGet("{id}")]
 
@@ -37,6 +37,8 @@ namespace PersonasWebApi.Controllers
             return Ok(persona);
         }
 
+
+
         [HttpPost]
         public async Task<ActionResult<Persona>> PostPersona(Persona persona) 
         {
@@ -45,6 +47,10 @@ namespace PersonasWebApi.Controllers
 
             return CreatedAtAction("GetPersona", new {id = persona.Id},persona);
         }
+
+
+
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Persona>> DeletePersona(int id) 
@@ -62,6 +68,10 @@ namespace PersonasWebApi.Controllers
                 return NoContent();
             }
         }
+
+
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarPersona(int id, Persona persona) 
         {
@@ -90,9 +100,16 @@ namespace PersonasWebApi.Controllers
             return NoContent();
         }
 
+
+
+
         private bool PersonaExists(int id)
         {
             return _context.Persona.Any(e => e.Id == id);
         }
+
+
+
+
     }
 }

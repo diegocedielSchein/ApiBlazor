@@ -1,8 +1,8 @@
-﻿@page "/personaunica/{Id:int}"
+﻿@page "/personaunica/{IdAttr:int}"
 
-@inject IJSRuntime JSRuntime
-@inject HttpClient http
-@inject NavigationManager NavigationManager;
+@inject IJSRuntime JSRuntime;
+@inject HttpClient httpSrv;
+@inject NavigationManager NavigationManagerSrv;
 @using BlazorPeople.Models;
 
 <h3>Datos de la Persona</h3>
@@ -83,16 +83,15 @@ else
 @code
 {
     [Parameter]
-    public int Id { get; set; }
+    public int IdAttr { get; set; }
 
     public int UserIdDelete;
-    private List<Persona> personas;
     private bool ShowDeleteUser;
     private Persona persona;
 
     protected override async Task OnInitializedAsync()
     {
-        persona = await http.GetFromJsonAsync<Persona>($"api/personas/{Id}");
+        persona = await httpSrv.GetFromJsonAsync<Persona>($"api/personas/{IdAttr}");
     }
 
     public void ConfirmDeleteUser(int UserId)
@@ -104,9 +103,9 @@ else
 
     private async Task EliminarPersona()
     {
-        Id = UserIdDelete;
-        await http.DeleteAsync($"api/personas/{Id}");
-        NavigationManager.NavigateTo("/personas");
+        IdAttr = UserIdDelete;
+        await httpSrv.DeleteAsync($"api/personas/{IdAttr}");
+        NavigationManagerSrv.NavigateTo("/personas");
 
     }
 
@@ -118,12 +117,12 @@ else
 
     public void Volver()
     {
-        NavigationManager.NavigateTo("/personas");
+        NavigationManagerSrv.NavigateTo("/personas");
     }
 
     private async Task GenerarPdf()
     {
-        var response = await http.GetAsync($"api/pdf/{Id}");
+        var response = await httpSrv.GetAsync($"api/pdf/{IdAttr}");
         response.EnsureSuccessStatusCode();
 
         var pdfBytes = await response.Content.ReadAsByteArrayAsync();

@@ -1,8 +1,8 @@
 ﻿@page "/agregar"
 
-@inject HttpClient Http;
+@inject HttpClient HttpSrv;
 @using BlazorPeople.Models;
-@inject NavigationManager NavigationManager;
+@inject NavigationManager NavigationManagerSrv;
 
 <h3>Agregar Nueva Persona</h3>
 
@@ -97,9 +97,9 @@
     public async Task EnviarPersona()
     {
 
-        await Http.PostAsJsonAsync("api/personas", persona);
+        await HttpSrv.PostAsJsonAsync("api/personas", persona);
 
-        NavigationManager.NavigateTo("/personas");
+        NavigationManagerSrv.NavigateTo("/personas");
         persona = new Persona();
     }
 
@@ -110,7 +110,7 @@
 
     public void Volver()
     {
-        NavigationManager.NavigateTo("/personas");    
+        NavigationManagerSrv.NavigateTo("/personas");
     }
 
 

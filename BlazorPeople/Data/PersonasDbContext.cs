@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BlazorPeople.Models;
+using System.Net.Http;
 namespace BlazorPeople.Data
 {
     public class PersonasDbContext : DbContext
@@ -9,5 +10,7 @@ namespace BlazorPeople.Data
 
         }
         public DbSet<Persona> Persona { get; set; }
+
+        
     }
 }

@@ -1,7 +1,7 @@
 ﻿@page "/personas"
 
-@inject HttpClient http;
-@inject NavigationManager navigation;
+@inject HttpClient httpSrv;
+@inject NavigationManager navigationSrv;
 @using BlazorPeople.Models;
 
 @if (cargando)
@@ -10,6 +10,7 @@
 }
 else{
     <h3>Lista De Personas</h3>
+
         <style>
             .nav-link {
                 text-decoration: none;              
@@ -17,14 +18,31 @@ else{
             .nav-link:hover{
                 background-color: #0056B4;
                 color:white;
+                
             }
+            .ancho{
+                width:300px;
+                border:solid 3px gray;
+                padding:10px;
+                border-radius:4%; 
+
+            }
+            
         </style>
 
 
-    <button class="btn btn-primary p-2 w-10 text-center rounded nav-link" @onclick="Add"><span class="oi oi-plus"></span><strong>Agregar Usuario</strong></button>
-        
+        <EditForm Model="person" OnValidSubmit="buscarPersona">
+            <label class="row mx-4 mt-3 h5">Buscar persona</label>
+            <input type="text" class="mx-4 mb-4 ancho" @bind="idbuscado" required placeholder="Ingrese el numero de Identificacion..." />
+            <button type="submit" class="btn btn-success rounded ml-3"><i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>Buscar</button>
+        </EditForm>
 
-        @if (personas != null) { 
+        <div class="btn-group">
+            <button class="btn btn-primary text-center rounded nav-link p-2 me-3" @onclick="Add"><span class="oi oi-plus"></span><strong>Agregar Usuario</strong></button>
+            <button class="btn btn-secondary rounded p-2" @onclick="OnInitializedAsync"><i class="oi oi-person" style="color: #ffffff;"></i>Ver Lista</button>
+        </div>
+
+        @if (personasFiltradas != null && personasFiltradas.Any()) { 
         <table class="table">
             <thead>
                 <tr>
@@ -40,7 +58,7 @@ else{
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in personas)
+                @foreach (var user in personasFiltradas)
                 {
                     <tr>
                         <td>@user.TipoIdentificacion</td>
@@ -57,25 +75,48 @@ else{
 
             </tbody>
         </table>
-        }
+    }
+    else if(noResultados && !personasFiltradas.Any())
+    {
+       <h3 class="text-lg m-4 text-center" style="color:darkgray;">No hay resultados para esta busqueda <i class="fa-solid fa-face-sad-tear fa-lg" style="color: #cccccc;"></i></h3>
+
+    }
+
 }
 
 @code {
+    private bool noResultados = false;
+    private int? idbuscado;
     private Persona[] personas;
+    private Persona[] personasFiltradas;
+    private Persona person = new Persona();
     private bool cargando;
 
     protected override async Task OnInitializedAsync()
     {
         cargando = true;
         await Task.Yield();
-        personas = await http.GetFromJsonAsync<Persona[]>("api/personas");    
+        personas = await httpSrv.GetFromJsonAsync<Persona[]>("api/personas");
+        personasFiltradas = personas;
         cargando = false;
+        noResultados = false; 
     }
 
 
     public void Add()
     {
-        navigation.NavigateTo("/agregar");
+        navigationSrv.NavigateTo("/agregar");
     }
 
+    private void buscarPersona()
+    {
+
+        personasFiltradas = personas.Where(p => p.Identificacion == idbuscado).ToArray();
+        noResultados = true;
+
+       
+
+    }
+
+    
 }
